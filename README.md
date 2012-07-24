@@ -11,7 +11,7 @@ https://github.com/Spawnfest2012/perforator2
 Usage
 -----
 
-For ehanced comfort Perforator ships with a rebar plguin,
+For enhanced comfort Perforator ships with a rebar plguin,
 add this baby to your `rebar.config`:
 
 ``` erlang
@@ -25,7 +25,7 @@ The testing goes like this:
 
 * Write some `*_perf.erl` modules and put them in your `tests/` directory.
 * Run `./rebar perf`
-* Exlore the wonderful results written in `.perf/`
+* Explore the wonderful results written in `.perf/`
 
 _perf.erl modules
 -----
