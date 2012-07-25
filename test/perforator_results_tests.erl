@@ -53,8 +53,7 @@ test_save_results() ->
                 {<<"foobar_perf">>, [
                     {successful, true},
                     {test_conditions, _},
-                    {result, _},
-                    {runs, _}
+                    {result, _}
                 ]}
             ]}
         ]}],

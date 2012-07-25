@@ -3,6 +3,8 @@
 -include("log_utils.hrl").
 -include("perforator.hrl").
 
+-define(VERBOSITY, application:get_env(perforator, verbosity)).
+
 -export([
     save/2
 ]).
@@ -194,13 +196,17 @@ format_successful_case_output(CaseName, Runs, RunsResults, RunsFailures) ->
                     calc_test_case_mins(RunsResults),
                     calc_test_case_maxs(RunsResults)
                 ])
-            },
-            {runs,
+            }
+    ] ++ case application:get_env(perforator, verbosity) of
+        {ok, 0} ->
+            [];
+        {ok, 1} ->
+            [{runs,
                 [{Id, [{results, Results}]} ||
                     {Id, [{success, true}, {results, Results}]}<-Runs
                 ]
-            }
-    ]}.
+            }]
+    end}.
 
 get_sleep_time() ->
     ?DEFAULT_SLEEP_TIME.
