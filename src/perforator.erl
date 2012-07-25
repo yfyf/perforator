@@ -50,13 +50,15 @@ run_test({setup, SetupFun, CleanupFun, TestObj}) ->
                    Results = run_test(TestObj),
                    try run_testcase_cleanup([], Args)
                    catch C:R ->
-                       ?error("Context cleanup failed", [{C, R}])
+                       ?error("Context cleanup failed",
+                            [{C, R}, {stacktrace, erlang:get_stacktrace()}])
                    end,
                    be_careful(), %% @todo Make this precise
                    Results
             catch
                 C:R ->
-                    ?error("Context setup failed", [{C, R}]),
+                    ?error("Context setup failed",
+                        [{C, R}, {stacktrace, erlang:get_stacktrace()}]),
                     {failure, {C, R}}
             end
     end;
@@ -100,13 +102,15 @@ exec_test_case(FunSpec, Opts) ->
                Results = {RunNum, perform_run(FunSpec, Args)},
                try run_testcase_cleanup(Opts, Args)
                catch C:R ->
-                   ?error("Context cleanup failed", [{C, R}])
+                   ?error("Context cleanup failed",
+                        [{C, R}, {stacktrace, erlang:get_stacktrace()}])
                end,
                timer:sleep(SleepTime), %% @todo Make this precise
                Results
         catch
             C:R ->
-                ?error("Context setup failed:", [{C, R}]),
+                ?error("Context setup failed:",
+                    [{C, R}, {stacktrace, erlang:get_stacktrace()}]),
                 {failure, {context_setup, R}}
         end
     end, lists:seq(1, RunCount)),
@@ -157,7 +161,8 @@ perform_run(FunSpec, Args) ->
             {success, [{duration, Time}|SysMetrics]}
     catch
         C:R ->
-            ?error("Test case execution failed!", [{C, R}]),
+            ?error("Test case execution failed!",
+                [{C, R}, {stacktrace, erlang:get_stacktrace()}]),
             {failure, {case_exec, R}}
     end.
 
