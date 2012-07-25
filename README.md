@@ -6,7 +6,7 @@ Perforator is a (E)unit-testing style performance testing tool.
 Although it can be used as a standalone tool, to unleash it's full power
 use it with the Perforator CI server. Check it out here:
 
-https://github.com/Spawnfest2012/perforator2
+https://github.com/brb/perforator-ci
 
 Usage
 -----
@@ -17,14 +17,14 @@ add this baby to your `rebar.config`:
 ``` erlang
 {plugins, [perforator_rebar_plugin]}.
 {deps, [
-    {git, ".*", "git@github.com:Spawnfest2012/perforator.git", "master"}
-]}.
+    {perforator, ".*", {git, "git@github.com:yfyf/perforator.git", "master"}}
+]}
 ```
 
 The testing goes like this:
 
 * Write some `*_perf.erl` modules and put them in your `tests/` directory.
-* Run `./rebar perf`
+* Run `./rebar perf skip_deps=true'
 * Explore the wonderful results written in `.perf/`
 
 _perf.erl modules
