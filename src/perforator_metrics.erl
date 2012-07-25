@@ -11,33 +11,31 @@
 
 -define(COLLECT_INTERVAL, 300).
 -define(MAX_RETRIEVE_WAIT, ?COLLECT_INTERVAL*3).
+-define(COLLECTORS,
+        [collect_cpu_util, collect_vm_memory]).
 
 
 init_collect() ->
-    spawn_link(fun collector_process/0).
+    lists:map(
+        fun(Collector) ->
+            spawn_link(?MODULE, Collector, [])
+        end,
+        ?COLLECTORS
+    ).
 
-collector_process() ->
-    Metrics = get_metrics(),
-    Stats = [{perforator_utils:get_timestamp(), Metrics}],
-    collector_process(Stats, ?COLLECT_INTERVAL).
-
-collector_process(Stats, SleepTime) ->
-    receive {retrieve, Sender} -> Sender ! {stats, Stats}
-    after SleepTime ->
-        MoreMetrics = get_metrics(),
-        NewStats = [{perforator_utils:get_timestamp(), MoreMetrics}|Stats],
-        collector_process(NewStats, SleepTime)
-    end.
+retrieve(Pids) when is_list(Pids) ->
+    {ok, lists:map(fun retrieve/1, Pids)};
 
 retrieve(Pid) ->
     Pid ! {retrieve, self()},
     receive
-        {stats, Stats} ->
-            {ok, Stats}
+        {Tag, Stat} when is_atom(Tag)->
+            {Tag, Stat}
     after ?MAX_RETRIEVE_WAIT ->
         {error, unable_to_retrieve_stats}
     end.
 
+% @todo iskelt kazkur kitur
 -spec agregate([{atom(), integer() | float()}]) ->
 [
     {mean, [{atom(), integer() | float()}]} |
@@ -51,27 +49,26 @@ agregate(PropList) ->
         {max, perforator_stats:max(PropList)}
     ].
 
-get_metrics() ->
-    [
-        %% @todo make sure cpu_sup:util() is called just before starting the
-        %% test run.
-        {cpu_util, cpu_sup:util()},
-        {cpu_load, cpu_load()}
-    ] ++ mem_load().
+%% ============================================================================
+%% Collector processes
+%% ============================================================================
+% @todo Create a behaviour and move these to separate modules
 
-%% ===================================================================
-%% Helpers
-%% ===================================================================
+collect_cpu_util() ->
+    collect_cpu_util([cpu_sup:util()], ?COLLECT_INTERVAL).
 
+collect_cpu_util(Stats, SleepTime) ->
+    receive {retrieve, Sender} ->
+        Sender ! {cpu_util, lists:sum(Stats) / length(Stats)}
+    after SleepTime ->
+        collect_cpu_util([cpu_sup:util()|Stats], SleepTime)
+    end.
 
-%% @doc Returns CPU load in standart form (i.e. like from top)
-cpu_load() ->
-    cpu_sup:avg1() / 256.
-
-mem_load() ->
-    MemLoad = memsup:get_system_memory_data(),
-    UsedMem = proplists:get_value(total_memory, MemLoad) -
-        proplists:get_value(free_memory, MemLoad),
-    UsedSwp = proplists:get_value(total_swap, MemLoad) -
-        proplists:get_value(free_swap, MemLoad),
-    [{used_memory, UsedMem}, {used_swap, UsedSwp}].
+collect_vm_memory() ->
+    collect_vm_memory([erlang:memory(total)], ?COLLECT_INTERVAL).
+collect_vm_memory(Stats, SleepTime) ->
+    receive {retrieve, Sender} ->
+        Sender ! {vm_memory, lists:sum(Stats) / length(Stats)}
+    after SleepTime ->
+        collect_vm_memory([erlang:memory(total)|Stats], SleepTime)
+    end.

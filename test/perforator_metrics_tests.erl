@@ -21,7 +21,6 @@ perforator_metrics_test_() ->
             ?silent(application:stop(sasl))
          end,
         [
-            {"Metrics lookup test", fun test_metrics/0},
             {"Collector process test", fun test_collector/0},
             {"Dying collect process test", fun test_dead_collector/0},
             {"Agregate stats test", fun test_agregate/0}
@@ -32,20 +31,11 @@ perforator_metrics_test_() ->
 %% Actual tests
 %% ============================================================================
 
-test_metrics() ->
-    Read = perforator_metrics:get_metrics(),
-    Check1 = [is_float(proplists:get_value(Metric, Read))
-        || Metric <- [cpu_util, cpu_load]],
-    Check2 = [is_integer(proplists:get_value(Metric, Read))
-        || Metric <- [used_memory, used_swap]],
-    ?assertEqual(lists:duplicate(length(Check1) + length(Check2), true),
-        Check1 ++ Check2).
-
 test_collector() ->
     Pid = perforator_metrics:init_collect(),
     timer:sleep(1000),
     {ok, Return} = perforator_metrics:retrieve(Pid),
-    ?assertEqual(4, length(Return)).
+    ?assertEqual(2, length(Return)).
 
 test_dead_collector() ->
     Pid = spawn(fun() -> timer:sleep(1) end),
