@@ -70,12 +70,14 @@ run_test(PrimitiveTestObj) ->
             {error, {unknown_test_object, PrimitiveTestObj}}
     end.
 
-exec_primitive_test_obj({repeat, TestObj, _, _}) ->
-    %% @todo: TBD
-   exec_primitive_test_obj(TestObj);
+exec_primitive_test_obj({repeat, TestObj, RunCount, SleepTime}) ->
+   exec_primitive_test_obj(TestObj,
+       [{run_count, RunCount}, {sleep_time, SleepTime}]);
 exec_primitive_test_obj({desc, _, TestObj}) ->
     %% @todo: TBD
     exec_primitive_test_obj(TestObj);
+
+%% @todo handle recursive decorators here
 exec_primitive_test_obj(Fun) ->
     exec_primitive_test_obj(Fun, []).
 
