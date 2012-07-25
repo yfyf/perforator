@@ -157,7 +157,8 @@ perform_run(FunSpec, Args) ->
             {success, [{duration, Time}|SysMetrics]}
     catch
         C:R ->
-            {failure, {C, R}}
+            ?error("Test case execution failed!", [{C, R}]),
+            {failure, {case_exec, R}}
     end.
 
 -spec get_test_case_name(perforator_types:fun_spec()) -> atom().
