@@ -30,11 +30,7 @@ test_save_results() ->
                 [{1,
                     {success, [
                         {duration, 110},
-                        {metrics, [
-                            {42, [
-                                {snacks_consumed, 9001}
-                            ]}
-                        ]}
+                        {snacks_consumed, 9001}
                     ]}
                 }]
             }]

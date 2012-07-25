@@ -61,8 +61,7 @@ test_foreach_perf() ->
             ?assertMatch({success, _}, Rez),
             {success, Stats} = Rez,
             Duration = proplists:get_value(duration, Stats),
-            ?assert(Duration =< 20), %% otherwise something is really baaad
-            ?assert(proplists:is_defined(metrics, Stats))
+            ?assert(Duration =< 20) %% otherwise something is really baaad
         end, Runs)
     end,
     CheckEverythingFun(Runs1),

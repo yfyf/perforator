@@ -80,13 +80,10 @@ get_runs({_CaseName, [{runs, Runs}]}) ->
 -spec get_metrics(perforator_results_types:test_case_run()) ->
     [perforator_results_types:test_case_run_tick()].
 get_metrics({RunId, {success, RunStats}}) ->
-    Duration = proplists:lookup(duration, RunStats),
-    TickData = proplists:get_value(metrics, RunStats),
-    TickMetrics = [Metrics || {_TimeStamp, Metrics} <-TickData],
     {RunId,
         [
             {success, true},
-            {results, [Duration] ++  perforator_metrics:agregate(TickMetrics)}
+            {results, RunStats}
         ]
     };
 get_metrics({RunId, {failure, _Info}}) ->
@@ -141,27 +138,13 @@ get_total_failures(TestsOutput) ->
 
 calc_test_case_averages(TestCaseMetrics) ->
     % @todo use mean instead of average all the way down (and up)
-    {mean, perforator_stats:average([
-        [proplists:lookup(duration, Metric)]
-            ++ proplists:get_value(mean, Metric) ||
-        Metric <- TestCaseMetrics
-        ]
-    )}.
+    {mean, perforator_stats:average(TestCaseMetrics)}.
 
 calc_test_case_mins(TestCaseMetrics) ->
-    {min, perforator_stats:min([
-        [proplists:lookup(duration, Metric)]
-            ++ proplists:get_value(min, Metric) ||
-        Metric <- TestCaseMetrics
-    ])}.
+    {min, perforator_stats:min(TestCaseMetrics)}.
 
 calc_test_case_maxs(TestCaseMetrics) ->
-    {max, perforator_stats:max([
-        [proplists:lookup(duration, Metric)]
-            ++ proplists:get_value(max, Metric) ||
-        Metric <- TestCaseMetrics
-        ]
-    )}.
+    {max, perforator_stats:max(TestCaseMetrics)}.
 
 calc_test_case_output(TestCase={CaseName, _}) ->
     case get_runs(TestCase) of

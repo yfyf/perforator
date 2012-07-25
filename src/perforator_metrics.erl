@@ -5,8 +5,7 @@
 -compile(export_all).
 -export([
     init_collect/0,
-    retrieve/1,
-    agregate/1
+    retrieve/1
 ]).
 
 -define(COLLECT_INTERVAL, 300).
@@ -34,20 +33,6 @@ retrieve(Pid) ->
     after ?MAX_RETRIEVE_WAIT ->
         {error, unable_to_retrieve_stats}
     end.
-
-% @todo iskelt kazkur kitur
--spec agregate([{atom(), integer() | float()}]) ->
-[
-    {mean, [{atom(), integer() | float()}]} |
-    {min, [{atom(), integer() | float()}]} |
-    {max, [{atom(), integer() | float()}]}
-].
-agregate(PropList) ->
-    [
-        {mean, perforator_stats:average(PropList)},
-        {min, perforator_stats:min(PropList)},
-        {max, perforator_stats:max(PropList)}
-    ].
 
 %% ============================================================================
 %% Collector processes
