@@ -92,8 +92,8 @@ exec_primitive_test_obj({raw_fun, FunSpec={_Module, _Function, _Arity}}, Opts) -
 exec_test_case(FunSpec, Opts) ->
     RunCount = proplists:get_value(run_count, Opts, ?DEFAULT_RUN_COUNT),
     SleepTime = proplists:get_value(sleep_time, Opts, ?DEFAULT_SLEEP_TIME),
-    ?status("Running test: ~p ...", [get_test_case_name(FunSpec)]),
-    RunResults = lists:map(fun (RunNum) ->
+    ?status("Running test: ~p... ", [get_test_case_name(FunSpec)]),
+    RunsResults = lists:map(fun (RunNum) ->
         try run_testcase_setup(Opts) of
            Args ->
                timer:sleep(SleepTime), %% @todo Make this precise
@@ -107,12 +107,29 @@ exec_test_case(FunSpec, Opts) ->
         catch
             C:R ->
                 ?error("Context setup failed:", [{C, R}]),
-                {failure, {C, R}}
+                {failure, {context_setup, R}}
         end
     end, lists:seq(1, RunCount)),
     TestCaseName = get_test_case_name(FunSpec),
-    ?status("ok~n", []),
-    {TestCaseName, [{runs, RunResults}]}.
+    print_test_case_summary(RunsResults),
+    {TestCaseName, [{runs, RunsResults}]}.
+
+print_test_case_summary(RunsResults) ->
+    TestCaseHasFailures = lists:any(fun
+        ({_Run, {failure, _}}) -> true;
+        (_) -> false
+    end, RunsResults),
+    case TestCaseHasFailures of
+        true ->
+            ?status("error!~n", []);
+        false ->
+            RunCount = length(RunsResults),
+            TotalDuration = lists:sum(
+                [proplists:get_value(duration, Results) ||
+                    {_, {success, Results}} <- RunsResults]),
+            ?status("ok [~p runs, total duration: ~p ms]~n",
+                [RunCount, TotalDuration / 1000])
+    end.
 
 %% @doc Sorry for this FunSpec crap, but this is needed to:
 %% 1) stay comptabile with pre-R15B Erlang, because I cannot do fun
@@ -137,7 +154,7 @@ perform_run(FunSpec, Args) ->
     of
         {Time, _Value} ->
             {ok, SysMetrics} = perforator_metrics:retrieve(Pid),
-            {success, [{duration, Time}, {metrics, SysMetrics}]}
+            {success, [{duration, Time}|SysMetrics]}
     catch
         C:R ->
             {failure, {C, R}}
