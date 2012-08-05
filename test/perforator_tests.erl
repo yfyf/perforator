@@ -19,7 +19,8 @@ perforator_test_() ->
         [
             %{"Fun in {setup, ..} corret name ", fun test_fun_in_setup_name/0}
             {"Correct duration", fun test_correct_duration/0},
-            {"{foreach, ..} fixture test", {timeout, 10000, fun test_foreach_perf/0}}
+            {"{foreach, ..} fixture test", fun test_foreach_fixture/0},
+            {"{repeat, ..} fixture test", fun test_repeat_fixture/0}
         ]
     }.
 
@@ -45,7 +46,7 @@ test_correct_duration() ->
         ?assertApprox(?TEST_FUN_SLEEP*1000, Duration)
     end, get_runs(Results)).
 
-test_foreach_perf() ->
+test_foreach_fixture() ->
     TestObj = {foreach, fun () -> ok end, fun (_) -> ok end, [
         fun () -> ok end, %% test case 1
         fun (_) -> ok end %% test case 2
@@ -70,6 +71,27 @@ test_foreach_perf() ->
     end,
     CheckEverythingFun(Runs1),
     CheckEverythingFun(Runs2).
+
+test_repeat_fixture() ->
+    RunCount = 40,
+    SleepTime = 1, % 1ms, the SleepTime is tested indirectly: if the test
+    % doesn't time out, this means that the value was picked up.
+    TestObj = {repeat, RunCount, SleepTime, fun () -> ok end},
+    Result = perforator:run_test(TestObj),
+    ?assertMatch({_, [_|_]}, Result),
+    Runs = get_runs(Result),
+    ?assertEqual(RunCount, length(Runs)),
+    CheckEverythingFun = fun (Runs) ->
+        lists:foreach(fun (Run) ->
+            {_, Rez} = Run,
+            ?assertMatch({success, _}, Rez),
+            {success, Stats} = Rez,
+            Duration = proplists:get_value(duration, Stats),
+            % the test case does nothing so should terminate immediatelly
+            ?assert(Duration =< ?NULL_TESTCASE_MAX_TIME)
+        end, Runs)
+    end,
+    CheckEverythingFun(Runs).
 
 %% @todo Fix + test this later
 %test_fun_in_setup_name() ->

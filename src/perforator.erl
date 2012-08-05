@@ -72,7 +72,7 @@ run_test(PrimitiveTestObj) ->
             {error, {unknown_test_object, PrimitiveTestObj}}
     end.
 
-exec_primitive_test_obj({repeat, TestObj, RunCount, SleepTime}) ->
+exec_primitive_test_obj({repeat, RunCount, SleepTime, TestObj}) ->
    exec_primitive_test_obj(TestObj,
        [{run_count, RunCount}, {sleep_time, SleepTime}]);
 exec_primitive_test_obj({desc, _, TestObj}) ->
@@ -194,7 +194,7 @@ test_obj_is_primitive(TestObj) ->
 
 be_careful() ->
     erlang:garbage_collect(),
-    timer:sleep(500).
+    timer:sleep(?GC_SLEEP).
 
 deps() -> [sasl, os_mon].
 

@@ -27,7 +27,7 @@
 -type primitive_test_obj() :: test_fun() | test_fun_decorator() | fun().
 -type test_fun_decorator() :: repeat_decorator() | desc_decorator().
 -type repeat_decorator() ::
-    {repeat, test_fun(), Times :: pos_integer(), Sleep :: timer:time()}.
+    {repeat, Count::pos_integer(), SleepMs::non_neg_integer(), primitive_test_obj()}.
 -type desc_decorator() ::
     {desc, string(), test_fun()}.
 -type test_fun() :: {raw_fun, mfa_spec()}.
