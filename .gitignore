@@ -5,3 +5,4 @@ ebin/
 misc/
 deps/*
 *.swp
+rebar
