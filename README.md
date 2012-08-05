@@ -14,13 +14,13 @@ https://github.com/brb/perforator-ci
 Usage
 -----
 
-For enhanced comfort Perforator ships with a rebar plugin[^1],
+For enhanced comfort Perforator ships with a rebar plugin,
 add this baby to your `rebar.config`:
 
-[^1]: Note: the plugin doesn't seem to be working with the newest rebar
+(_Note: the plugin doesn't seem to be working with the newest rebar
 version, this will be fixed shortly, but in the mean time use version
 [2.0.0](https://github.com/basho/rebar/commit/1c98f6ccd4adc915167d4302d732d79e4da3d390)
-which is guaranteed to work.
+which is guaranteed to work_)
 
 ``` erlang
 {plugins, [perforator_rebar_plugin]}.
