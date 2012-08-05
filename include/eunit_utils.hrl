@@ -93,3 +93,33 @@
 -define(_assertApprox(ExpectedValue, ObservedValue),
     ?_test(?assertSublist(ExpectedValue, ObservedValue))).
 
+
+%% ============================================================================
+%% Random helpers
+%% ============================================================================
+
+%% @doc Macro for getting stacktraces which are being lost by EUnit
+-define(TRACE(X),
+    try
+        X()
+    catch C:R ->
+        ?error("Screw you, eUnit.", [
+            {c, C}, {r, R}, erlang:get_stacktrace()]),
+        throw({fail, R})
+    end).
+
+-define(TTRACE(Descr),
+    {
+        element(1, Descr),
+        fun () ->
+            Fun = element(2, Descr),
+            try
+                Fun()
+            catch
+                C:R ->
+                    ?error("Screw you, eUnit.", [{c, C}, {r, R},
+                        erlang:get_stacktrace()]),
+                    ?assert(false)
+            end
+        end
+    }).
