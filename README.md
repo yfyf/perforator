@@ -48,9 +48,11 @@ Test objects can be:
 ```test_generator_perf_() -> {setup, Setup, Cleanup, TestObj}.```
 * for more examples check out `test/sample_lists_perf.erl` module.
 
-Note the `_perf_()`, `_perf()` suffixes, they are kind of the same as EUnit's
+Note #1: the `_perf_()`, `_perf()` suffixes, they are kind of the same as EUnit's
 `_test()` and `_test_()` ones. The main difference between EUnit is that you
 don't need to return a fun everywhere.
+Note #2: since there are no parse transforms involved, you must export the
+`*_perf[_]()` functions! `-compile(export_all).` is justifiable here.
 
 
 Notes on test runs and statistics
