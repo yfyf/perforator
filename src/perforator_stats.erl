@@ -11,7 +11,7 @@
 mean([]) ->
     0;
 mean(List) ->
-    lists:sum(List) / lists:length(List).
+    lists:sum(List) / length(List).
 
 %% @doc Calculate mean values of every property given a list of proplists
 %% e.g. average([[{a, 1}, {b, 10}], [{a, 3}, {b, 90}]]) -> [{a, 2}, {b, 50}].
