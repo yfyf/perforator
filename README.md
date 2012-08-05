@@ -17,7 +17,7 @@ add this baby to your `rebar.config`:
 ``` erlang
 {plugins, [perforator_rebar_plugin]}.
 {deps, [
-    {perforator, ".*", {git, "git@github.com:yfyf/perforator.git", "master"}}
+    {perforator, ".*", {git, "https://github.com/yfyf/perforator.git", "master"}}
 ]}
 ```
 
