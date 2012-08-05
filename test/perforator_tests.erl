@@ -6,6 +6,9 @@
 -include("log_utils.hrl").
 
 -define(TEST_FUN_SLEEP, 100). % 100ms
+% The maximum duration that a test case which does nothing can take in the
+% context of a perforator test.
+-define(NULL_TESTCASE_MAX_TIME, 50). % 50ms
 
 -compile(export_all).
 
@@ -61,7 +64,8 @@ test_foreach_perf() ->
             ?assertMatch({success, _}, Rez),
             {success, Stats} = Rez,
             Duration = proplists:get_value(duration, Stats),
-            ?assert(Duration =< 20) %% otherwise something is really baaad
+            % the test case does nothing so should terminate immediatelly
+            ?assert(Duration =< ?NULL_TESTCASE_MAX_TIME)
         end, Runs)
     end,
     CheckEverythingFun(Runs1),
