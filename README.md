@@ -8,6 +8,9 @@ use it with the Perforator CI server. Check it out here:
 
 https://github.com/brb/perforator-ci
 
+[Travis-CI](http://travis-ci.org/yfyf/perforator) ::
+ ![Build Status](https://secure.travis-ci.org/yfyf/perforator.png "Build status of Perforator")
+
 Usage
 -----
 
