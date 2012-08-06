@@ -149,7 +149,7 @@ perform_run(FunSpec, Args) ->
             Ar
     end,
     FunArgs = maybe_strip_args(Arity, Args),
-    Pid = perforator_metrics:init_collect(),
+    CollectorPids = perforator_metrics:init_collect(),
     try
         case FunSpec of
             FunA when is_function(FunA) -> timer:tc(FunA, FunArgs);
@@ -157,7 +157,7 @@ perform_run(FunSpec, Args) ->
         end
     of
         {Time, _Value} ->
-            {ok, SysMetrics} = perforator_metrics:retrieve(Pid),
+            {ok, SysMetrics} = perforator_metrics:retrieve(CollectorPids),
             {success, [{duration, Time}|SysMetrics]}
     catch
         C:R ->
