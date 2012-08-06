@@ -2,3 +2,6 @@ Q for Gytis:
     * why is the plugin copying all the .beam's into it's own dir, is that
     necessary? Would make more sense to just use the normal ones living in
     ebin/?
+
+* receive should be broadcasted to all collectors *instantly*, because if one
+of them is dead then others are still collecting false data!
