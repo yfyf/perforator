@@ -138,15 +138,14 @@ get_total_failures(TestsOutput) ->
         TestsOutput
     ).
 
-calc_test_case_averages(TestCaseMetrics) ->
-    % @todo use mean instead of average all the way down (and up)
-    {mean, perforator_stats:average(TestCaseMetrics)}.
+calc_test_case_means(TestCaseMetrics) ->
+    {mean, perforator_stats:means(TestCaseMetrics)}.
 
 calc_test_case_mins(TestCaseMetrics) ->
-    {min, perforator_stats:min(TestCaseMetrics)}.
+    {min, perforator_stats:mins(TestCaseMetrics)}.
 
 calc_test_case_maxs(TestCaseMetrics) ->
-    {max, perforator_stats:max(TestCaseMetrics)}.
+    {max, perforator_stats:maxes(TestCaseMetrics)}.
 
 calc_test_case_output(TestCase={CaseName, _}) ->
     case get_runs(TestCase) of
@@ -192,7 +191,7 @@ format_successful_case_output(CaseName, Runs, RunsResults, RunsFailures) ->
             {result,
                 [{failures, RunsFailures}] ++
                 reformat_ble([
-                    calc_test_case_averages(RunsResults),
+                    calc_test_case_means(RunsResults),
                     calc_test_case_mins(RunsResults),
                     calc_test_case_maxs(RunsResults)
                 ])

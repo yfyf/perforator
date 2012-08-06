@@ -13,9 +13,9 @@ perforator_stats_test_() ->
         fun() -> ok end,
         fun(_) -> ok end,
         [
-            {"Average value calculation test", fun test_average/0},
-            {"Min value calculation test", fun test_min/0},
-            {"Max value calculation test", fun test_max/0}
+            {"Mean value calculation test", fun test_means/0},
+            {"Min value calculation test", fun test_mins/0},
+            {"Max value calculation test", fun test_maxes/0}
         ]
     }.
 
@@ -23,23 +23,23 @@ perforator_stats_test_() ->
 %% Actual tests
 %% ============================================================================
 
-test_average() ->
+test_means() ->
     Reads = [
         [{cpu_util, N}, {cpu_load, N+3}] || N <- lists:seq(1, 3)
     ],
-    ExpectedAverage = [{cpu_util, 2.0}, {cpu_load, 5.0}],
-    ?assertEqual(ExpectedAverage, perforator_stats:average(Reads)).
+    ExpectedAverage = [{cpu_load, 5.0}, {cpu_util, 2.0}],
+    ?assertEqual(ExpectedAverage, perforator_stats:means(Reads)).
 
-test_min() ->
+test_mins() ->
     Reads = [
         [{a, 1}, {b, 5}], [{a, 3}, {b, 3}]
     ],
-    ExpectedMin = [{a, 1}, {b, 3}],
-    ?assertEqual(ExpectedMin, perforator_stats:min(Reads)).
+    Expectedmins = [{a, 1}, {b, 3}],
+    ?assertEqual(Expectedmins, perforator_stats:mins(Reads)).
 
-test_max() ->
+test_maxes() ->
     Reads = [
         [{a, 1}, {b, 5}], [{a, 3}, {b, 3}]
     ],
-    ExpectedMax = [{a, 3}, {b, 5}],
-    ?assertEqual(ExpectedMax, perforator_stats:max(Reads)).
+    Expectedmaxes = [{a, 3}, {b, 5}],
+    ?assertEqual(Expectedmaxes, perforator_stats:maxes(Reads)).
